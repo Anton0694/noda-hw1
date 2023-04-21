@@ -19,15 +19,15 @@ const fs = require('fs').promises;
 
  async function getContactById(contactId) {
     const contacts = await listContacts();
-    const contact = contacts.find(contact => contact.id === contactId.toString());
-    return contact;
+    const contact = contacts.find(contact => contact.id === contactId);
+    return contact || null;
 }
 
  async function removeContact(contactId) {
     let contacts = await listContacts();
-    contacts = contacts.filter(contact => contact.id !== contactId.toString())
+    contacts = contacts.filter(contact => contact.id !== contactId)
     try {
-        await fs.writeFile(contactsPath, JSON.stryngify(contacts));
+        await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
         return `Contact with id:${contactId} successfully removed`;
     } catch (error) {
         console.log(error)
@@ -44,7 +44,7 @@ const fs = require('fs').promises;
         phone,
     });
     try {
-        await fs.writeFile(contactsPath, JSON.stryngify(contacts));
+        await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
         return contacts.slice(-1)[0];
     } catch (error) {
         console.log(error)
