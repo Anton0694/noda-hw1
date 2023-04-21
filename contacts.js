@@ -1,32 +1,33 @@
-import { nanoid } from 'nanoid';
-
-import path from 'path';
+const { nanoid } = require('nanoid');
+const path = require('path');
 const fs = require('fs').promises;
+
  const contactsPath = path.resolve('./db/contacts.json');
  
 
-// TODO: задокументувати кожну функцію
-export async function listContacts() {
+
+ async function listContacts() {
     try {
         const contacts = await fs.readFile(contactsPath)
         return JSON.parse(contacts)
     }
     catch (error) {
-        console.log(error)        
+        console.log(error)    
+        return [];
   }
 }
 
-export async function getContactById(contactId) {
+ async function getContactById(contactId) {
     const contacts = await listContacts();
-    const contact = contacts.find(contact => contact.id === contactId.toString())
+    const contact = contacts.find(contact => contact.id === contactId.toString());
     return contact;
 }
 
-export async function removeContact(contactId) {
-    const contacts = await listContacts();
+ async function removeContact(contactId) {
+    let contacts = await listContacts();
     contacts = contacts.filter(contact => contact.id !== contactId.toString())
     try {
-        fs.writeFile(contactsPath, JSON.stryngify(contacts));
+        await fs.writeFile(contactsPath, JSON.stryngify(contacts));
         return `Contact with id:${contactId} successfully removed`;
     } catch (error) {
         console.log(error)
@@ -34,7 +35,7 @@ export async function removeContact(contactId) {
 }
 
 
-export async function addContact(name, email, phone) {
+ async function addContact(name, email, phone) {
     const contacts = await listContacts();
     contacts.push({
         id: nanoid(),
@@ -43,10 +44,16 @@ export async function addContact(name, email, phone) {
         phone,
     });
     try {
-        fs.writeFile(contactsPath, JSON.stryngify(contacts));
+        await fs.writeFile(contactsPath, JSON.stryngify(contacts));
         return contacts.slice(-1)[0];
     } catch (error) {
         console.log(error)
     }
 }
 
+module.exports = {
+    listContacts,
+    getContactById,
+    removeContact,
+    addContact,
+}
